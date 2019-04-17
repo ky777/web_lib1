@@ -1756,6 +1756,10 @@ Content-Encoding →gzip
 const express = require('express');
 const port = 3002;
 const app = express();
+var root = 'C:/Users/kondr/Documents/nodejs/kexp1_1';
+app.use(express.static(root));
+app.use(express.static(root + '/static/html'));
+app.use(express.static(root + '/static/img'));
 
 //Start the Server
 const server = app.listen(port, (error) => {
@@ -1783,7 +1787,7 @@ app.post('/', function (req, res) {
     res.send(JSON.parse(data));
 });
 //PUT
-app.put('/', function (req, res) {
+app.put('/user', function (req, res) {
     var ln = req.query.ln;
     var fn = req.query.fn;
     var tn = req.query.tn;
@@ -1801,7 +1805,7 @@ app.put('/', function (req, res) {
     res.send('Сотрудник с табельным номером ' + tn+' не найден.');
 });
 //DELETE
-app.delete('/', function (req, res) {
+app.delete('/user', function (req, res) {
     var tn = req.query.tn;
     console.log('tn=' + req.query.tn);
     var obj = JSON.parse(data);
@@ -1832,4 +1836,60 @@ var data = '{\
 {"lastn":"Сидоров", "firstn":"Сидор", "tnumber":"3"}\
 ]\
 }';
+app.get("/", function (req, res) {
+    //res.sendFile(root+'/static/html/index.html'
+    res.sendFile('index.html'
+    )
+})
    ```
+**4. Доп. задание. Статика и маршрутизация.**
+
+    Добавлена папка static (классическое название для статически раздаваемой папки).
+***4.1. В папке static создны папки html и img.***
+
+***4.2. В папке static/html создн файл index.html со следующим содержанием:***
+```html
+<head></head>
+<body>
+<h1>Hello, world!</h1>
+<img src=”/img/image.jpg”>
+</body>
+````
+***4.3. Настройка сервера так, чтобы при запросе из браузера отображалась эта страница:*** Добавлено в файл exp.js:
+
+```javascript
+var root = 'Path';
+app.use(express.static(root));
+app.use(express.static(root + '/static/html'));
+app.use(express.static(root + '/static/img'));
+```
+***4.4. Настройка routing (маршрутизации) на сервере.*** Чтобы путь 
+/hack тоже отдавал файл index.html, а путь /, по умолчанию отдающий index, выдавал дополнительную страницу hack.html.
+```javascript
+app.get("/hack(.html)?", function (req, res) {
+    res.sendfile(root +'/static/html/index.html'
+    )
+});
+//файл index.js
+this._index = opts.index !== undefined
+    ? normalizeList(opts.index, 'index option')
+   // : ['index.html']
+      : ['hack.html']
+```
+***3.5. Переименунм hack.html (содержащую теги html) в hack.txt.*** 
+
+`Что изменилось?`
+>Загрузилась сртраница index.html. 
+
+`Почему?`  
+>Если недостипна страница поумолчанию, то загружается следующая страница поумолчанию.(их несколько). 
+
+`Как сделать так, чтобы страница отображалась корректно?`
+```javascript
+app.get("/", function (req, res) {
+    //res.redirect('hack.html'
+    res.redirect('hack.txt'
+    )
+});
+```
+
